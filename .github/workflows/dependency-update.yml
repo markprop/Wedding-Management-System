@@ -1,0 +1,68 @@
+name: Dependency Update
+
+on:
+  schedule:
+    - cron: '0 0 * * 1' # Run every Monday
+  workflow_dispatch:
+
+jobs:
+  update-dependencies:
+    name: Update Dependencies
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Update backend dependencies
+      run: |
+        cd backend
+        npm update
+        npm audit fix --force || echo "Some vulnerabilities could not be automatically fixed"
+        
+    - name: Update frontend dependencies
+      run: |
+        cd frontend
+        npm update
+        npm audit fix --force || echo "Some vulnerabilities could not be automatically fixed"
+        
+    - name: Check for security vulnerabilities
+      run: |
+        echo "Checking for remaining vulnerabilities..."
+        cd backend && npm audit --audit-level=high || echo "Backend has vulnerabilities that need manual review"
+        cd ../frontend && npm audit --audit-level=high || echo "Frontend has vulnerabilities that need manual review"
+        
+    - name: Create Pull Request
+      if: github.event_name == 'schedule'
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: 'chore: update dependencies and fix security vulnerabilities'
+        title: 'Automated Dependency Update'
+        body: |
+          ## 🔄 Automated Dependency Update
+          
+          This PR contains automated dependency updates and security fixes.
+          
+          ### Changes Made
+          - Updated backend dependencies
+          - Updated frontend dependencies
+          - Applied security fixes where possible
+          
+          ### Security Notes
+          - Some vulnerabilities may require manual review
+          - Please test thoroughly before merging
+          
+          ### Next Steps
+          1. Review the changes
+          2. Run tests locally
+          3. Test the application
+          4. Merge if everything looks good
+        branch: dependency-update
+        delete-branch: true
