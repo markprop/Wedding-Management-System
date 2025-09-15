@@ -5,6 +5,10 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+  packages: write
+
 jobs:
   deploy:
     name: Deploy Wedding Management System
@@ -273,36 +277,9 @@ jobs:
         path: deployment/
         retention-days: 30
         
-    - name: Create release
-      if: github.event_name == 'push'
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: v${{ github.run_number }}
-        release_name: Release v${{ github.run_number }}
-        body: |
-          ## 🚀 Wedding Management System Release v${{ github.run_number }}
-          
-          ### What's New
-          - Complete wedding management application
-          - Professional documentation
-          - Ready for production deployment
-          
-          ### Installation
-          1. Download the deployment package
-          2. Follow the DEPLOYMENT.md guide
-          3. Configure environment variables
-          4. Start the application
-          
-          ### Features
-          - Guest Management
-          - Expense Tracking
-          - Food Planning
-          - Pawo System
-          - Location Management
-          - Interactive Dashboard
-          
-          **Happy Wedding Planning! 💒✨**
-        draft: false
-        prerelease: false
+    - name: Deployment Summary
+      run: |
+        echo "🎉 Deployment completed successfully!"
+        echo "📦 Deployment package created: wedding-management-system-deployment"
+        echo "🚀 Ready for production deployment"
+        echo "📋 Follow DEPLOYMENT.md guide for installation instructions"
