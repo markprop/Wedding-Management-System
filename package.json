@@ -1,0 +1,36 @@
+{
+  "name": "wedding-planner",
+  "version": "1.0.0",
+  "description": "Complete Wedding Management System with MongoDB, Express, and React",
+  "scripts": {
+    "install-backend": "cd backend && npm install",
+    "install-frontend": "cd frontend && npm install",
+    "install-all": "npm run install-backend && npm run install-frontend",
+    "start-backend": "cd backend && npm start",
+    "start-frontend": "cd frontend && npm start",
+    "dev-backend": "cd backend && npm run dev",
+    "dev-frontend": "cd frontend && npm start",
+    "build": "cd frontend && npm run build",
+    "test": "cd backend && npm test && cd ../frontend && npm test"
+  },
+  "keywords": [
+    "wedding",
+    "management",
+    "mongodb",
+    "express",
+    "react",
+    "planning",
+    "pawo",
+    "expense-tracker"
+  ],
+  "author": "Wedding Planner Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/markprop/Wedding-Management-System.git"
+  },
+  "homepage": "https://github.com/markprop/Wedding-Management-System#readme",
+  "bugs": {
+    "url": "https://github.com/markprop/Wedding-Management-System/issues"
+  }
+}
