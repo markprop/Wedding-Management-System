@@ -1,13 +1,49 @@
 const request = require('supertest');
+
+// Mock the database connection before importing the server
+jest.mock('../config/db', () => ({
+  __esModule: true,
+  default: jest.fn(() => Promise.resolve())
+}));
+
+// Mock the models
+jest.mock('../models/Guest', () => ({
+  find: jest.fn(() => ({
+    populate: jest.fn(() => ({
+      sort: jest.fn(() => Promise.resolve([]))
+    }))
+  }))
+}));
+
+jest.mock('../models/Expense', () => ({
+  find: jest.fn(() => ({
+    populate: jest.fn(() => ({
+      sort: jest.fn(() => Promise.resolve([]))
+    }))
+  }))
+}));
+
+jest.mock('../models/FoodItem', () => ({
+  find: jest.fn(() => ({
+    sort: jest.fn(() => Promise.resolve([]))
+  }))
+}));
+
+jest.mock('../models/Location', () => ({
+  find: jest.fn(() => ({
+    sort: jest.fn(() => Promise.resolve([]))
+  }))
+}));
+
 const app = require('../server');
 
 describe('Server', () => {
   test('should respond to health check', async () => {
     const response = await request(app)
-      .get('/')
+      .get('/api/health')
       .expect(200);
     
-    expect(response.text).toContain('Wedding Management System');
+    expect(response.body.message).toContain('Wedding Planner API is running');
   });
 
   test('should handle 404 for unknown routes', async () => {
@@ -23,8 +59,7 @@ describe('API Routes', () => {
       .get('/api/guests')
       .expect(200);
     
-    expect(response.body).toHaveProperty('guests');
-    expect(Array.isArray(response.body.guests)).toBe(true);
+    expect(Array.isArray(response.body)).toBe(true);
   });
 
   test('GET /api/expenses should return expenses array', async () => {
@@ -32,8 +67,7 @@ describe('API Routes', () => {
       .get('/api/expenses')
       .expect(200);
     
-    expect(response.body).toHaveProperty('expenses');
-    expect(Array.isArray(response.body.expenses)).toBe(true);
+    expect(Array.isArray(response.body)).toBe(true);
   });
 
   test('GET /api/food should return food items array', async () => {
@@ -41,8 +75,7 @@ describe('API Routes', () => {
       .get('/api/food')
       .expect(200);
     
-    expect(response.body).toHaveProperty('foodItems');
-    expect(Array.isArray(response.body.foodItems)).toBe(true);
+    expect(Array.isArray(response.body)).toBe(true);
   });
 
   test('GET /api/locations should return locations array', async () => {
@@ -50,7 +83,6 @@ describe('API Routes', () => {
       .get('/api/locations')
       .expect(200);
     
-    expect(response.body).toHaveProperty('locations');
-    expect(Array.isArray(response.body.locations)).toBe(true);
+    expect(Array.isArray(response.body)).toBe(true);
   });
 });

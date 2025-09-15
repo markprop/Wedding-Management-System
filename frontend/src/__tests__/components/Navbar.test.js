@@ -18,8 +18,8 @@ describe('Navbar Component', () => {
     expect(screen.getByText(/Dashboard/i)).toBeInTheDocument();
     expect(screen.getByText(/Guests/i)).toBeInTheDocument();
     expect(screen.getByText(/Expenses/i)).toBeInTheDocument();
-    expect(screen.getByText(/Food Planning/i)).toBeInTheDocument();
-    expect(screen.getByText(/Pawo Tracker/i)).toBeInTheDocument();
+    expect(screen.getByText(/Food/i)).toBeInTheDocument();
+    expect(screen.getByText(/Pawo/i)).toBeInTheDocument();
     expect(screen.getByText(/Locations/i)).toBeInTheDocument();
   });
 

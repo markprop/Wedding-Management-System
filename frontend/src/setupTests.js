@@ -4,6 +4,12 @@
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
 
+// Polyfill for TextDecoder (required by Mapbox GL JS)
+if (typeof TextDecoder === 'undefined') {
+  global.TextDecoder = require('util').TextDecoder;
+  global.TextEncoder = require('util').TextEncoder;
+}
+
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
