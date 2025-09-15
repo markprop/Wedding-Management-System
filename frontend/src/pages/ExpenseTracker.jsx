@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
-import { formatCurrency, formatDate, getStatusColor } from '../utils/formatters';
+import { formatCurrency, formatDate } from '../utils/formatters';
 import ExpenseModal from '../components/ExpenseModal';
 import PieChart from '../components/PieChart';
-import BarChart from '../components/BarChart';
 
 const ExpenseTracker = () => {
   const [expenses, setExpenses] = useState([]);

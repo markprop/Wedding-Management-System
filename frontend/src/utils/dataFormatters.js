@@ -120,6 +120,13 @@ export const generateCSV = (data, type) => {
         csv += `"${location.name}","${location.address}","${location.type}","${location.lat}","${location.lng}"\n`;
       });
       break;
+      
+    default:
+      csv = 'Data\n';
+      data.forEach(item => {
+        csv += `"${JSON.stringify(item)}"\n`;
+      });
+      break;
   }
   
   return csv;

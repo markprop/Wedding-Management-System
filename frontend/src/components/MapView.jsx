@@ -103,7 +103,7 @@ const MapView = ({ locations }) => {
         map.current = null;
       }
     };
-  }, [mapboxConfig]);
+  }, [mapboxConfig, locations]);
 
   useEffect(() => {
     if (!map.current || !mapLoaded || !locations || locations.length === 0) return;

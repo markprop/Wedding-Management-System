@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
-import { formatCurrency, formatDate, calculateNetPawo, getStatusColor } from '../utils/formatters';
+import { formatCurrency, calculateNetPawo } from '../utils/formatters';
 import GuestModal from '../components/GuestModal';
 import PieChart from '../components/PieChart';
 import BarChart from '../components/BarChart';

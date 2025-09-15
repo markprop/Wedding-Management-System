@@ -22,13 +22,10 @@ const Dashboard = () => {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const [guests, expenses, food, guestStats, expenseStats, foodStats] = await Promise.all([
+      const [guests, expenses, food] = await Promise.all([
         api.getGuests(),
         api.getExpenses(),
-        api.getFoodItems(),
-        api.getGuestStats(),
-        api.getExpenseStats(),
-        api.getFoodStats()
+        api.getFoodItems()
       ]);
 
       const totalPawo = calculateTotalPawo(guests);
