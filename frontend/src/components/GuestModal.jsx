@@ -84,22 +84,25 @@ const GuestModal = ({ guest, locations, onSave, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">
-              {guest ? 'Edit Guest' : 'Add New Guest'}
-            </h2>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600"
-            >
-              <span className="text-2xl">&times;</span>
-            </button>
-          </div>
+    <div className="modal-overlay">
+      <div className="modal-content">
+        <div className="modal-header">
+          <h2 className="modal-title">
+            {guest ? 'Edit Guest' : 'Add New Guest'}
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 p-1"
+            aria-label="Close modal"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="modal-body">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             {/* Validation Error */}
             {validationError && (
               <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
@@ -108,10 +111,10 @@ const GuestModal = ({ guest, locations, onSave, onClose }) => {
             )}
             
             {/* Basic Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Name *
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="animate-slide-in">
+                <label className="label-required">
+                  Name
                 </label>
                 <input
                   type="text"
@@ -120,11 +123,12 @@ const GuestModal = ({ guest, locations, onSave, onClose }) => {
                   onChange={handleChange}
                   required
                   className="input-field"
+                  placeholder="Enter guest name"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Phone *
+              <div className="animate-slide-in" style={{animationDelay: '0.1s'}}>
+                <label className="label-required">
+                  Phone
                 </label>
                 <input
                   type="tel"
@@ -133,13 +137,14 @@ const GuestModal = ({ guest, locations, onSave, onClose }) => {
                   onChange={handleChange}
                   required
                   className="input-field"
+                  placeholder="Enter phone number"
                 />
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="animate-slide-in" style={{animationDelay: '0.2s'}}>
+                <label className="label">
                   Email
                 </label>
                 <input
@@ -148,10 +153,11 @@ const GuestModal = ({ guest, locations, onSave, onClose }) => {
                   value={formData.email}
                   onChange={handleChange}
                   className="input-field"
+                  placeholder="Enter email address"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+              <div className="animate-slide-in" style={{animationDelay: '0.3s'}}>
+                <label className="label">
                   Location
                 </label>
                 <select
@@ -171,21 +177,21 @@ const GuestModal = ({ guest, locations, onSave, onClose }) => {
             </div>
 
             {/* Attendance and Preferences */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="flex items-center">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="flex items-center animate-slide-in" style={{animationDelay: '0.4s'}}>
                 <input
                   type="checkbox"
                   name="attending"
                   checked={formData.attending}
                   onChange={handleChange}
-                  className="mr-2"
+                  className="mr-3 h-5 w-5 text-primary-600 focus:ring-primary-500 border-gray-300 rounded-lg transition-all duration-200"
                 />
-                <label className="text-sm font-medium text-gray-700">
+                <label className="text-sm font-semibold text-gray-700 cursor-pointer">
                   Attending
                 </label>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+              <div className="animate-slide-in" style={{animationDelay: '0.5s'}}>
+                <label className="label">
                   Meal Preference
                 </label>
                 <select
@@ -200,8 +206,8 @@ const GuestModal = ({ guest, locations, onSave, onClose }) => {
                   <option value="vegan">Vegan</option>
                 </select>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+              <div className="animate-slide-in" style={{animationDelay: '0.6s'}}>
+                <label className="label">
                   Table Number
                 </label>
                 <input
@@ -211,17 +217,21 @@ const GuestModal = ({ guest, locations, onSave, onClose }) => {
                   onChange={handleChange}
                   min="1"
                   className="input-field"
+                  placeholder="Enter table number"
                 />
               </div>
             </div>
 
             {/* Pawo Information */}
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Pawo Information</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Upper Amount (PKR) *
+            <div className="border-t pt-6 sm:pt-8">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-6 flex items-center">
+                <span className="mr-2 text-2xl">💰</span>
+                Pawo Information
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="animate-slide-in" style={{animationDelay: '0.7s'}}>
+                  <label className="label-required">
+                    Upper Amount (PKR)
                   </label>
                   <input
                     type="number"
@@ -232,11 +242,12 @@ const GuestModal = ({ guest, locations, onSave, onClose }) => {
                     step="0.01"
                     className="input-field"
                     required
+                    placeholder="0.00"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Awoto Amount (PKR) *
+                <div className="animate-slide-in" style={{animationDelay: '0.8s'}}>
+                  <label className="label-required">
+                    Awoto Amount (PKR)
                   </label>
                   <input
                     type="number"
@@ -247,10 +258,11 @@ const GuestModal = ({ guest, locations, onSave, onClose }) => {
                     step="0.01"
                     className="input-field"
                     required
+                    placeholder="0.00"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                <div className="animate-slide-in" style={{animationDelay: '0.9s'}}>
+                  <label className="label">
                     Banodo Amount (PKR)
                   </label>
                   <input
@@ -261,6 +273,7 @@ const GuestModal = ({ guest, locations, onSave, onClose }) => {
                     min="0"
                     step="0.01"
                     className="input-field"
+                    placeholder="0.00"
                   />
                 </div>
               </div>
@@ -307,7 +320,7 @@ const GuestModal = ({ guest, locations, onSave, onClose }) => {
             </div>
 
             {/* Form Actions */}
-            <div className="flex justify-end space-x-4 pt-6 border-t">
+            <div className="modal-footer">
               <button
                 type="button"
                 onClick={onClose}

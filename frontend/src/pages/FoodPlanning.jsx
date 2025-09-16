@@ -109,12 +109,12 @@ const FoodPlanning = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">Food Planning</h1>
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Food Planning</h1>
         <button
           onClick={() => setShowModal(true)}
-          className="btn-primary"
+          className="btn-primary self-start sm:self-auto"
         >
           Add Food Item
         </button>
@@ -127,60 +127,107 @@ const FoodPlanning = () => {
       )}
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="card">
-          <div className="text-center">
-            <p className="text-sm text-gray-600">Total Items</p>
-            <p className="text-2xl font-bold text-gray-900">{stats.overview?.totalItems || 0}</p>
+      <div className="responsive-grid-4">
+        <div className="card-hover animate-slide-in">
+          <div className="flex items-center">
+            <div className="p-3 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex-shrink-0 shadow-lg">
+              <span className="text-2xl sm:text-3xl animate-bounce-slow">🍽️</span>
+            </div>
+            <div className="ml-4 sm:ml-6 min-w-0">
+              <p className="text-xs sm:text-sm font-semibold text-gray-600 uppercase tracking-wide">Total Items</p>
+              <p className="text-2xl sm:text-3xl font-bold text-gray-900 mt-1">{stats.overview?.totalItems || 0}</p>
+            </div>
           </div>
         </div>
-        <div className="card">
-          <div className="text-center">
-            <p className="text-sm text-gray-600">Total Cost</p>
-            <p className="text-2xl font-bold text-green-600">{formatCurrency(stats.overview?.totalCost || 0)}</p>
+        <div className="card-hover animate-slide-in" style={{animationDelay: '0.1s'}}>
+          <div className="flex items-center">
+            <div className="p-3 bg-gradient-to-br from-green-100 to-green-200 rounded-xl flex-shrink-0 shadow-lg">
+              <span className="text-2xl sm:text-3xl animate-bounce-slow">💰</span>
+            </div>
+            <div className="ml-4 sm:ml-6 min-w-0">
+              <p className="text-xs sm:text-sm font-semibold text-gray-600 uppercase tracking-wide">Total Cost</p>
+              <p className="text-2xl sm:text-3xl font-bold text-green-600 mt-1">{formatCurrency(stats.overview?.totalCost || 0)}</p>
+            </div>
           </div>
         </div>
-        <div className="card">
-          <div className="text-center">
-            <p className="text-sm text-gray-600">Total Quantity</p>
-            <p className="text-2xl font-bold text-blue-600">{stats.overview?.totalQuantity || 0}</p>
+        <div className="card-hover animate-slide-in" style={{animationDelay: '0.2s'}}>
+          <div className="flex items-center">
+            <div className="p-3 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl flex-shrink-0 shadow-lg">
+              <span className="text-2xl sm:text-3xl animate-bounce-slow">📊</span>
+            </div>
+            <div className="ml-4 sm:ml-6 min-w-0">
+              <p className="text-xs sm:text-sm font-semibold text-gray-600 uppercase tracking-wide">Total Quantity</p>
+              <p className="text-2xl sm:text-3xl font-bold text-blue-600 mt-1">{stats.overview?.totalQuantity || 0}</p>
+            </div>
           </div>
         </div>
-        <div className="card">
-          <div className="text-center">
-            <p className="text-sm text-gray-600">Avg Cost/Item</p>
-            <p className="text-2xl font-bold text-purple-600">
-              {formatCurrency((stats.overview?.totalCost || 0) / (stats.overview?.totalItems || 1))}
-            </p>
+        <div className="card-hover animate-slide-in" style={{animationDelay: '0.3s'}}>
+          <div className="flex items-center">
+            <div className="p-3 bg-gradient-to-br from-orange-100 to-orange-200 rounded-xl flex-shrink-0 shadow-lg">
+              <span className="text-2xl sm:text-3xl animate-bounce-slow">📈</span>
+            </div>
+            <div className="ml-4 sm:ml-6 min-w-0">
+              <p className="text-xs sm:text-sm font-semibold text-gray-600 uppercase tracking-wide">Avg Cost/Item</p>
+              <p className="text-2xl sm:text-3xl font-bold text-purple-600 mt-1">
+                {formatCurrency((stats.overview?.totalCost || 0) / (stats.overview?.totalItems || 1))}
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="card">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">Cost by Category</h3>
-          <PieChart data={categoryData} />
+      <div className="responsive-grid-2">
+        <div className="card-hover animate-slide-in" style={{animationDelay: '0.4s'}}>
+          <div className="flex items-center mb-6">
+            <div className="p-2 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg mr-3">
+              <span className="text-xl">📊</span>
+            </div>
+            <h3 className="text-lg sm:text-xl font-bold text-gray-900">Cost by Category</h3>
+          </div>
+          <div className="chart-container">
+            <PieChart data={categoryData} />
+          </div>
         </div>
-        <div className="card">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">Cost by Course</h3>
-          <BarChart data={courseData} />
+        <div className="card-hover animate-slide-in" style={{animationDelay: '0.5s'}}>
+          <div className="flex items-center mb-6">
+            <div className="p-2 bg-gradient-to-br from-green-100 to-green-200 rounded-lg mr-3">
+              <span className="text-xl">🍽️</span>
+            </div>
+            <h3 className="text-lg sm:text-xl font-bold text-gray-900">Cost by Course</h3>
+          </div>
+          <div className="chart-container">
+            <BarChart data={courseData} />
+          </div>
         </div>
-        <div className="card">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">Per Person vs Shared</h3>
+      </div>
+
+      <div className="card-hover animate-slide-in" style={{animationDelay: '0.6s'}}>
+        <div className="flex items-center mb-6">
+          <div className="p-2 bg-gradient-to-br from-purple-100 to-purple-200 rounded-lg mr-3">
+            <span className="text-xl">👥</span>
+          </div>
+          <h3 className="text-lg sm:text-xl font-bold text-gray-900">Per Person vs Shared</h3>
+        </div>
+        <div className="chart-container">
           <PieChart data={perPersonData} />
         </div>
       </div>
 
       {/* Search and Filter */}
-      <div className="card">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-gray-900">Food Items List</h2>
-          <div className="flex items-center space-x-4">
+      <div className="card-hover animate-slide-in" style={{animationDelay: '0.7s'}}>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <div className="flex items-center">
+            <div className="p-2 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-lg mr-3">
+              <span className="text-xl">📋</span>
+            </div>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Food Items List</h2>
+          </div>
+          <div className="search-container">
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="input-field w-48"
+              className="input-field filter-select"
             >
               <option value="">All Categories</option>
               {categories.map(category => (
@@ -192,13 +239,13 @@ const FoodPlanning = () => {
               placeholder="Search food items..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="input-field w-64"
+              className="input-field search-input"
             />
           </div>
         </div>
 
         {/* Table */}
-        <div className="overflow-x-auto">
+        <div className="table-responsive">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
@@ -216,22 +263,26 @@ const FoodPlanning = () => {
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredFoodItems.map((item) => (
                 <tr key={item._id} className="hover:bg-gray-50">
-                  <td className="table-cell font-medium">{item.name}</td>
+                  <td className="table-cell-long font-medium" title={item.name}>{item.name}</td>
                   <td className="table-cell">
-                    <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">
+                    <span className="status-badge status-badge-info">
                       {item.category}
                     </span>
                   </td>
-                  <td className="table-cell capitalize">{item.course}</td>
-                  <td className="table-cell">{item.quantity}</td>
-                  <td className="table-cell">{item.unit}</td>
-                  <td className="table-cell">{formatCurrency(item.cost)}</td>
-                  <td className="table-cell font-medium text-green-600">
+                  <td className="table-cell capitalize">
+                    <span className="status-badge status-badge-warning">
+                      {item.course}
+                    </span>
+                  </td>
+                  <td className="table-cell font-medium" title={item.quantity}>{item.quantity}</td>
+                  <td className="table-cell" title={item.unit}>{item.unit}</td>
+                  <td className="table-cell font-medium" title={formatCurrency(item.cost)}>{formatCurrency(item.cost)}</td>
+                  <td className="table-cell font-medium text-green-600" title={formatCurrency(item.quantity * item.cost)}>
                     {formatCurrency(item.quantity * item.cost)}
                   </td>
                   <td className="table-cell">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      item.perPerson ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
+                    <span className={`status-badge ${
+                      item.perPerson ? 'status-badge-success' : 'status-badge-primary'
                     }`}>
                       {item.perPerson ? 'Yes' : 'No'}
                     </span>
@@ -240,15 +291,15 @@ const FoodPlanning = () => {
                     <div className="flex space-x-2">
                       <button
                         onClick={() => handleEditFoodItem(item)}
-                        className="text-blue-600 hover:text-blue-800 text-sm"
+                        className="btn-sm btn-outline"
                       >
-                        Edit
+                        ✏️ Edit
                       </button>
                       <button
                         onClick={() => handleDeleteFoodItem(item._id)}
-                        className="text-red-600 hover:text-red-800 text-sm"
+                        className="btn-sm btn-danger"
                       >
-                        Delete
+                        🗑️ Delete
                       </button>
                     </div>
                   </td>

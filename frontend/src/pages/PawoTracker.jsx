@@ -85,10 +85,10 @@ const PawoTracker = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">Pawo Tracker</h1>
-        <button onClick={fetchData} className="btn-secondary">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Pawo Tracker</h1>
+        <button onClick={fetchData} className="btn-secondary self-start sm:self-auto">
           Refresh
         </button>
       </div>
@@ -100,61 +100,122 @@ const PawoTracker = () => {
       )}
 
       {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="card">
-          <div className="text-center">
-            <p className="text-sm text-gray-600">Total Upper</p>
-            <p className="text-2xl font-bold text-blue-600">{formatCurrency(stats.overview?.totalUpper || 0)}</p>
+      <div className="responsive-grid-4">
+        <div className="card-hover animate-slide-in">
+          <div className="flex items-center">
+            <div className="p-3 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex-shrink-0 shadow-lg">
+              <span className="text-2xl sm:text-3xl animate-bounce-slow">💰</span>
+            </div>
+            <div className="ml-4 sm:ml-6 min-w-0">
+              <p className="text-xs sm:text-sm font-semibold text-gray-600 uppercase tracking-wide">Total Upper</p>
+              <p className="text-2xl sm:text-3xl font-bold text-blue-600 mt-1">{formatCurrency(stats.overview?.totalUpper || 0)}</p>
+            </div>
           </div>
         </div>
-        <div className="card">
-          <div className="text-center">
-            <p className="text-sm text-gray-600">Total Awoto</p>
-            <p className="text-2xl font-bold text-green-600">{formatCurrency(stats.overview?.totalAwoto || 0)}</p>
+        <div className="card-hover animate-slide-in" style={{animationDelay: '0.1s'}}>
+          <div className="flex items-center">
+            <div className="p-3 bg-gradient-to-br from-green-100 to-green-200 rounded-xl flex-shrink-0 shadow-lg">
+              <span className="text-2xl sm:text-3xl animate-bounce-slow">🎁</span>
+            </div>
+            <div className="ml-4 sm:ml-6 min-w-0">
+              <p className="text-xs sm:text-sm font-semibold text-gray-600 uppercase tracking-wide">Total Awoto</p>
+              <p className="text-2xl sm:text-3xl font-bold text-green-600 mt-1">{formatCurrency(stats.overview?.totalAwoto || 0)}</p>
+            </div>
           </div>
         </div>
-        <div className="card">
-          <div className="text-center">
-            <p className="text-sm text-gray-600">Total Banodo</p>
-            <p className="text-2xl font-bold text-purple-600">{formatCurrency(stats.overview?.totalBanodo || 0)}</p>
+        <div className="card-hover animate-slide-in" style={{animationDelay: '0.2s'}}>
+          <div className="flex items-center">
+            <div className="p-3 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl flex-shrink-0 shadow-lg">
+              <span className="text-2xl sm:text-3xl animate-bounce-slow">🎯</span>
+            </div>
+            <div className="ml-4 sm:ml-6 min-w-0">
+              <p className="text-xs sm:text-sm font-semibold text-gray-600 uppercase tracking-wide">Total Banodo</p>
+              <p className="text-2xl sm:text-3xl font-bold text-purple-600 mt-1">{formatCurrency(stats.overview?.totalBanodo || 0)}</p>
+            </div>
           </div>
         </div>
-        <div className="card">
-          <div className="text-center">
-            <p className="text-sm text-gray-600">Net Contribution</p>
-            <p className="text-2xl font-bold text-green-600">{formatCurrency(stats.overview?.totalUpper || 0)}</p>
-            <p className="text-xs text-gray-500">Upper - (Awoto - Previous)</p>
+        <div className="card-hover animate-slide-in" style={{animationDelay: '0.3s'}}>
+          <div className="flex items-center">
+            <div className="p-3 bg-gradient-to-br from-orange-100 to-orange-200 rounded-xl flex-shrink-0 shadow-lg">
+              <span className="text-2xl sm:text-3xl animate-bounce-slow">📊</span>
+            </div>
+            <div className="ml-4 sm:ml-6 min-w-0">
+              <p className="text-xs sm:text-sm font-semibold text-gray-600 uppercase tracking-wide">Net Contribution</p>
+              <p className="text-2xl sm:text-3xl font-bold text-green-600 mt-1">{formatCurrency(stats.overview?.totalUpper || 0)}</p>
+              <p className="text-xs text-gray-500 font-medium">Upper - (Awoto - Previous)</p>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Explanation Card */}
-      <div className="card bg-blue-50 border-blue-200">
-        <h3 className="text-lg font-bold text-blue-900 mb-2">Pawo System Explanation</h3>
-        <div className="text-sm text-blue-800 space-y-2">
-          <p><strong>Upper:</strong> Direct contribution from the guest</p>
-          <p><strong>Awoto:</strong> Amount given to the guest in previous events</p>
-          <p><strong>Banodo:</strong> Additional gift amount</p>
-          <p><strong>Previous Amount:</strong> Automatically equals Awoto amount</p>
-          <p><strong>Net Contribution:</strong> Upper amount (since Previous and Awoto cancel each other out)</p>
+      <div className="card-hover animate-slide-in" style={{animationDelay: '0.4s'}}>
+        <div className="flex items-center mb-6">
+          <div className="p-2 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg mr-4">
+            <span className="text-2xl">💡</span>
+          </div>
+          <h3 className="text-xl sm:text-2xl font-bold text-blue-900">Pawo System Rules</h3>
+        </div>
+        <div className="text-sm space-y-3">
+          <div className="flex items-start space-x-3">
+            <span className="text-blue-600 font-bold">💰</span>
+            <p><strong className="text-blue-800">Upper Amount:</strong> <span className="text-blue-700">Direct contribution from the guest.</span></p>
+          </div>
+          <div className="flex items-start space-x-3">
+            <span className="text-green-600 font-bold">🎁</span>
+            <p><strong className="text-blue-800">Awoto Amount:</strong> <span className="text-blue-700">Amount previously given to the guest (cancels out with Previous Amount).</span></p>
+          </div>
+          <div className="flex items-start space-x-3">
+            <span className="text-purple-600 font-bold">🎯</span>
+            <p><strong className="text-blue-800">Banodo Amount:</strong> <span className="text-blue-700">Additional gift amount.</span></p>
+          </div>
+          <div className="flex items-start space-x-3">
+            <span className="text-orange-600 font-bold">📊</span>
+            <p><strong className="text-blue-800">Previous Amount:</strong> <span className="text-blue-700">Automatically equals Awoto amount</span></p>
+          </div>
+          <div className="flex items-start space-x-3">
+            <span className="text-green-600 font-bold">✅</span>
+            <p><strong className="text-blue-800">Net Contribution:</strong> <span className="text-blue-700">Upper amount (since Previous and Awoto cancel each other out)</span></p>
+          </div>
         </div>
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="card">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">Pawo Breakdown</h3>
-          <PieChart data={pawoBreakdownData} />
+      <div className="responsive-grid-2">
+        <div className="card-hover animate-slide-in" style={{animationDelay: '0.5s'}}>
+          <div className="flex items-center mb-6">
+            <div className="p-2 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg mr-3">
+              <span className="text-xl">📊</span>
+            </div>
+            <h3 className="text-lg sm:text-xl font-bold text-gray-900">Pawo Breakdown</h3>
+          </div>
+          <div className="chart-container">
+            <PieChart data={pawoBreakdownData} />
+          </div>
         </div>
-        <div className="card">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">Top Contributors</h3>
-          <BarChart data={topContributorsData} />
+        <div className="card-hover animate-slide-in" style={{animationDelay: '0.6s'}}>
+          <div className="flex items-center mb-6">
+            <div className="p-2 bg-gradient-to-br from-green-100 to-green-200 rounded-lg mr-3">
+              <span className="text-xl">🏆</span>
+            </div>
+            <h3 className="text-lg sm:text-xl font-bold text-gray-900">Top Contributors</h3>
+          </div>
+          <div className="chart-container">
+            <BarChart data={topContributorsData} />
+          </div>
         </div>
       </div>
 
-      <div className="card">
-        <h3 className="text-lg font-bold text-gray-900 mb-4">Contributions by Location</h3>
-        <PieChart data={locationData} />
+      <div className="card-hover animate-slide-in" style={{animationDelay: '0.7s'}}>
+        <div className="flex items-center mb-6">
+          <div className="p-2 bg-gradient-to-br from-purple-100 to-purple-200 rounded-lg mr-3">
+            <span className="text-xl">📍</span>
+          </div>
+          <h3 className="text-lg sm:text-xl font-bold text-gray-900">Contributions by Location</h3>
+        </div>
+        <div className="chart-container">
+          <PieChart data={locationData} />
+        </div>
       </div>
 
       {/* Detailed Pawo List */}

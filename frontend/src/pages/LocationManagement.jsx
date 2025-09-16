@@ -97,12 +97,12 @@ const LocationManagement = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">Location Management</h1>
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Location Management</h1>
         <button
           onClick={() => setShowModal(true)}
-          className="btn-primary"
+          className="btn-primary self-start sm:self-auto"
         >
           Add Location
         </button>
@@ -115,60 +115,99 @@ const LocationManagement = () => {
       )}
 
       {/* Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="card">
-          <div className="text-center">
-            <p className="text-sm text-gray-600">Total Locations</p>
-            <p className="text-2xl font-bold text-gray-900">{locations.length}</p>
+      <div className="responsive-grid-4">
+        <div className="card-hover animate-slide-in">
+          <div className="flex items-center">
+            <div className="p-3 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex-shrink-0 shadow-lg">
+              <span className="text-2xl sm:text-3xl animate-bounce-slow">📍</span>
+            </div>
+            <div className="ml-4 sm:ml-6 min-w-0">
+              <p className="text-xs sm:text-sm font-semibold text-gray-600 uppercase tracking-wide">Total Locations</p>
+              <p className="text-2xl sm:text-3xl font-bold text-gray-900 mt-1">{locations.length}</p>
+            </div>
           </div>
         </div>
-        <div className="card">
-          <div className="text-center">
-            <p className="text-sm text-gray-600">Venues</p>
-            <p className="text-2xl font-bold text-blue-600">
-              {locations.filter(l => l.type === 'venue').length}
-            </p>
+        <div className="card-hover animate-slide-in" style={{animationDelay: '0.1s'}}>
+          <div className="flex items-center">
+            <div className="p-3 bg-gradient-to-br from-green-100 to-green-200 rounded-xl flex-shrink-0 shadow-lg">
+              <span className="text-2xl sm:text-3xl animate-bounce-slow">🏛️</span>
+            </div>
+            <div className="ml-4 sm:ml-6 min-w-0">
+              <p className="text-xs sm:text-sm font-semibold text-gray-600 uppercase tracking-wide">Venues</p>
+              <p className="text-2xl sm:text-3xl font-bold text-blue-600 mt-1">
+                {locations.filter(l => l.type === 'venue').length}
+              </p>
+            </div>
           </div>
         </div>
-        <div className="card">
-          <div className="text-center">
-            <p className="text-sm text-gray-600">Receptions</p>
-            <p className="text-2xl font-bold text-green-600">
-              {locations.filter(l => l.type === 'reception').length}
-            </p>
+        <div className="card-hover animate-slide-in" style={{animationDelay: '0.2s'}}>
+          <div className="flex items-center">
+            <div className="p-3 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl flex-shrink-0 shadow-lg">
+              <span className="text-2xl sm:text-3xl animate-bounce-slow">🎉</span>
+            </div>
+            <div className="ml-4 sm:ml-6 min-w-0">
+              <p className="text-xs sm:text-sm font-semibold text-gray-600 uppercase tracking-wide">Receptions</p>
+              <p className="text-2xl sm:text-3xl font-bold text-green-600 mt-1">
+                {locations.filter(l => l.type === 'reception').length}
+              </p>
+            </div>
           </div>
         </div>
-        <div className="card">
-          <div className="text-center">
-            <p className="text-sm text-gray-600">Other</p>
-            <p className="text-2xl font-bold text-purple-600">
-              {locations.filter(l => !['venue', 'reception'].includes(l.type)).length}
-            </p>
+        <div className="card-hover animate-slide-in" style={{animationDelay: '0.3s'}}>
+          <div className="flex items-center">
+            <div className="p-3 bg-gradient-to-br from-orange-100 to-orange-200 rounded-xl flex-shrink-0 shadow-lg">
+              <span className="text-2xl sm:text-3xl animate-bounce-slow">🎯</span>
+            </div>
+            <div className="ml-4 sm:ml-6 min-w-0">
+              <p className="text-xs sm:text-sm font-semibold text-gray-600 uppercase tracking-wide">Other</p>
+              <p className="text-2xl sm:text-3xl font-bold text-purple-600 mt-1">
+                {locations.filter(l => !['venue', 'reception'].includes(l.type)).length}
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Charts and Map */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="card">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">Locations by Type</h3>
-          <PieChart data={typeData} />
+      <div className="responsive-grid-2">
+        <div className="card-hover animate-slide-in" style={{animationDelay: '0.4s'}}>
+          <div className="flex items-center mb-6">
+            <div className="p-2 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg mr-3">
+              <span className="text-xl">📊</span>
+            </div>
+            <h3 className="text-lg sm:text-xl font-bold text-gray-900">Locations by Type</h3>
+          </div>
+          <div className="chart-container">
+            <PieChart data={typeData} />
+          </div>
         </div>
-        <div className="card">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">Map View</h3>
-          <MapView locations={locations} />
+        <div className="card-hover animate-slide-in" style={{animationDelay: '0.5s'}}>
+          <div className="flex items-center mb-6">
+            <div className="p-2 bg-gradient-to-br from-green-100 to-green-200 rounded-lg mr-3">
+              <span className="text-xl">🗺️</span>
+            </div>
+            <h3 className="text-lg sm:text-xl font-bold text-gray-900">Map View</h3>
+          </div>
+          <div className="w-full h-64 sm:h-80 lg:h-96 rounded-lg overflow-hidden">
+            <MapView locations={locations} />
+          </div>
         </div>
       </div>
 
       {/* Search and Filter */}
-      <div className="card">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-gray-900">Locations List</h2>
-          <div className="flex items-center space-x-4">
+      <div className="card-hover animate-slide-in" style={{animationDelay: '0.6s'}}>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <div className="flex items-center">
+            <div className="p-2 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-lg mr-3">
+              <span className="text-xl">📋</span>
+            </div>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Locations List</h2>
+          </div>
+          <div className="search-container">
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
-              className="input-field w-48"
+              className="input-field filter-select"
             >
               <option value="">All Types</option>
               {locationTypes.map(type => (
@@ -182,13 +221,13 @@ const LocationManagement = () => {
               placeholder="Search locations..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="input-field w-64"
+              className="input-field search-input"
             />
           </div>
         </div>
 
         {/* Table */}
-        <div className="overflow-x-auto">
+        <div className="table-responsive">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
@@ -202,29 +241,29 @@ const LocationManagement = () => {
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredLocations.map((location) => (
                 <tr key={location._id} className="hover:bg-gray-50">
-                  <td className="table-cell font-medium">{location.name}</td>
+                  <td className="table-cell-long font-medium" title={location.name}>{location.name}</td>
                   <td className="table-cell">
-                    <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs capitalize">
+                    <span className="status-badge status-badge-info">
                       {location.type}
                     </span>
                   </td>
-                  <td className="table-cell">{location.address}</td>
-                  <td className="table-cell text-sm text-gray-600">
+                  <td className="table-cell-long" title={location.address}>{location.address}</td>
+                  <td className="table-cell text-sm text-gray-600" title={`${location.lat.toFixed(4)}, ${location.lng.toFixed(4)}`}>
                     {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
                   </td>
                   <td className="table-cell">
                     <div className="flex space-x-2">
                       <button
                         onClick={() => handleEditLocation(location)}
-                        className="text-blue-600 hover:text-blue-800 text-sm"
+                        className="btn-sm btn-outline"
                       >
-                        Edit
+                        ✏️ Edit
                       </button>
                       <button
                         onClick={() => handleDeleteLocation(location._id)}
-                        className="text-red-600 hover:text-red-800 text-sm"
+                        className="btn-sm btn-danger"
                       >
-                        Delete
+                        🗑️ Delete
                       </button>
                     </div>
                   </td>

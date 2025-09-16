@@ -52,25 +52,28 @@ const FoodModal = ({ foodItem, categories, courses, onSave, onClose }) => {
   const totalCost = (parseFloat(formData.quantity) || 0) * (parseFloat(formData.cost) || 0);
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-lg w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">
-              {foodItem ? 'Edit Food Item' : 'Add New Food Item'}
-            </h2>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600"
-            >
-              <span className="text-2xl">&times;</span>
-            </button>
-          </div>
+    <div className="modal-overlay">
+      <div className="modal-content-sm">
+        <div className="modal-header">
+          <h2 className="modal-title">
+            {foodItem ? 'Edit Food Item' : 'Add New Food Item'}
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 p-1"
+            aria-label="Close modal"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Name *
+        <div className="modal-body">
+          <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
+            <div className="animate-slide-in">
+              <label className="label-required">
+                Name
               </label>
               <input
                 type="text"
@@ -79,13 +82,14 @@ const FoodModal = ({ foodItem, categories, courses, onSave, onClose }) => {
                 onChange={handleChange}
                 required
                 className="input-field"
+                placeholder="Enter food item name"
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Category *
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="animate-slide-in" style={{animationDelay: '0.1s'}}>
+                <label className="label-required">
+                  Category
                 </label>
                 <select
                   name="category"
@@ -100,9 +104,9 @@ const FoodModal = ({ foodItem, categories, courses, onSave, onClose }) => {
                   ))}
                 </select>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Course *
+              <div className="animate-slide-in" style={{animationDelay: '0.2s'}}>
+                <label className="label-required">
+                  Course
                 </label>
                 <select
                   name="course"
@@ -119,10 +123,10 @@ const FoodModal = ({ foodItem, categories, courses, onSave, onClose }) => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Quantity *
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <div className="animate-slide-in" style={{animationDelay: '0.3s'}}>
+                <label className="label-required">
+                  Quantity
                 </label>
                 <input
                   type="number"
@@ -133,11 +137,12 @@ const FoodModal = ({ foodItem, categories, courses, onSave, onClose }) => {
                   min="0"
                   step="0.01"
                   className="input-field"
+                  placeholder="0"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Unit *
+              <div className="animate-slide-in" style={{animationDelay: '0.4s'}}>
+                <label className="label-required">
+                  Unit
                 </label>
                 <input
                   type="text"
@@ -149,9 +154,9 @@ const FoodModal = ({ foodItem, categories, courses, onSave, onClose }) => {
                   className="input-field"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Cost per Unit (PKR) *
+              <div className="animate-slide-in" style={{animationDelay: '0.5s'}}>
+                <label className="label-required">
+                  Cost per Unit (PKR)
                 </label>
                 <input
                   type="number"
@@ -162,26 +167,28 @@ const FoodModal = ({ foodItem, categories, courses, onSave, onClose }) => {
                   min="0"
                   step="0.01"
                   className="input-field"
+                  placeholder="0.00"
                 />
               </div>
             </div>
 
-            <div className="flex items-center">
+            <div className="flex items-center animate-slide-in" style={{animationDelay: '0.6s'}}>
               <input
                 type="checkbox"
                 name="perPerson"
                 checked={formData.perPerson}
                 onChange={handleChange}
-                className="mr-2"
+                className="mr-3 h-5 w-5 text-primary-600 focus:ring-primary-500 border-gray-300 rounded-lg transition-all duration-200"
               />
-              <label className="text-sm font-medium text-gray-700">
+              <label className="text-sm font-semibold text-gray-700 cursor-pointer">
                 Per Person Item
               </label>
             </div>
 
             {totalCost > 0 && (
-              <div className="p-4 bg-green-50 rounded-lg">
-                <p className="text-sm text-green-800">
+              <div className="p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-xl border border-green-200 animate-slide-in" style={{animationDelay: '0.7s'}}>
+                <p className="text-sm font-semibold text-green-800">
+                  <span className="mr-2">💰</span>
                   <strong>Total Cost:</strong> {totalCost.toLocaleString('en-PK', {
                     style: 'currency',
                     currency: 'PKR',
@@ -192,7 +199,7 @@ const FoodModal = ({ foodItem, categories, courses, onSave, onClose }) => {
               </div>
             )}
 
-            <div className="flex justify-end space-x-4 pt-6 border-t">
+            <div className="modal-footer">
               <button
                 type="button"
                 onClick={onClose}

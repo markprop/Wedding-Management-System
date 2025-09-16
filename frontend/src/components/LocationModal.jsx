@@ -79,25 +79,28 @@ const LocationModal = ({ location, types, onSave, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-lg w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">
-              {location ? 'Edit Location' : 'Add New Location'}
-            </h2>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600"
-            >
-              <span className="text-2xl">&times;</span>
-            </button>
-          </div>
+    <div className="modal-overlay">
+      <div className="modal-content-sm">
+        <div className="modal-header">
+          <h2 className="modal-title">
+            {location ? 'Edit Location' : 'Add New Location'}
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 p-1"
+            aria-label="Close modal"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Name *
+        <div className="modal-body">
+          <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
+            <div className="animate-slide-in">
+              <label className="label-required">
+                Name
               </label>
               <input
                 type="text"
@@ -106,12 +109,13 @@ const LocationModal = ({ location, types, onSave, onClose }) => {
                 onChange={handleChange}
                 required
                 className="input-field"
+                placeholder="Enter location name"
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Address *
+            <div className="animate-slide-in" style={{animationDelay: '0.1s'}}>
+              <label className="label-required">
+                Address
               </label>
               <textarea
                 name="address"
@@ -120,12 +124,13 @@ const LocationModal = ({ location, types, onSave, onClose }) => {
                 required
                 rows={3}
                 className="input-field"
+                placeholder="Enter full address"
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Type *
+            <div className="animate-slide-in" style={{animationDelay: '0.2s'}}>
+              <label className="label-required">
+                Type
               </label>
               <select
                 name="type"
@@ -143,10 +148,10 @@ const LocationModal = ({ location, types, onSave, onClose }) => {
               </select>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Latitude *
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="animate-slide-in" style={{animationDelay: '0.3s'}}>
+                <label className="label-required">
+                  Latitude
                 </label>
                 <input
                   type="number"
@@ -159,9 +164,9 @@ const LocationModal = ({ location, types, onSave, onClose }) => {
                   placeholder="e.g., 24.8607"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Longitude *
+              <div className="animate-slide-in" style={{animationDelay: '0.4s'}}>
+                <label className="label-required">
+                  Longitude
                 </label>
                 <input
                   type="number"
@@ -176,8 +181,9 @@ const LocationModal = ({ location, types, onSave, onClose }) => {
               </div>
             </div>
 
-            <div className="p-4 bg-blue-50 rounded-lg">
-              <p className="text-sm text-blue-800 mb-2">
+            <div className="p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl border border-blue-200 animate-slide-in" style={{animationDelay: '0.5s'}}>
+              <p className="text-sm font-semibold text-blue-800 mb-2">
+                <span className="mr-2">💡</span>
                 <strong>Note:</strong> You can get coordinates from Google Maps by right-clicking on a location and selecting "What's here?"
               </p>
               <p className="text-sm text-blue-700">
@@ -188,7 +194,7 @@ const LocationModal = ({ location, types, onSave, onClose }) => {
               </p>
             </div>
 
-            <div className="flex justify-end space-x-4 pt-6 border-t">
+            <div className="modal-footer">
               <button
                 type="button"
                 onClick={onClose}

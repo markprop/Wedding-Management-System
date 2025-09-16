@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import apiService from '../services/api';
+import { validateAndCorrectCoordinates, formatCoordinates } from '../utils/coordinateUtils';
 
 const MapView = ({ locations }) => {
   const mapContainer = useRef(null);
@@ -10,6 +11,31 @@ const MapView = ({ locations }) => {
   const [mapLoaded, setMapLoaded] = useState(false);
   const [mapboxConfig, setMapboxConfig] = useState(null);
   const [configError, setConfigError] = useState(null);
+
+  // Define helper functions first
+  const getColor = useCallback((type) => {
+    const colors = {
+      venue: '#3B82F6',
+      reception: '#10B981',
+      mehndi: '#F59E0B',
+      barat: '#EF4444',
+      photography: '#8B5CF6',
+      custom: '#6B7280'
+    };
+    return colors[type] || '#6B7280';
+  }, []);
+
+  const getColorClass = useCallback((type) => {
+    const colorClasses = {
+      venue: 'blue',
+      reception: 'green',
+      mehndi: 'yellow',
+      barat: 'red',
+      photography: 'purple',
+      custom: 'gray'
+    };
+    return colorClasses[type] || 'gray';
+  }, []);
 
   // Fetch Mapbox configuration from backend
   useEffect(() => {
@@ -31,6 +57,83 @@ const MapView = ({ locations }) => {
     // Disable Mapbox analytics globally
     if (window.mapboxgl) {
       window.mapboxgl.accessToken = mapboxConfig?.accessToken;
+      
+      // Disable Mapbox analytics and telemetry
+      if (window.mapboxgl.setRTLTextPlugin) {
+        window.mapboxgl.setRTLTextPlugin('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.3/mapbox-gl-rtl-text.js');
+      }
+    }
+    
+    // Disable Mapbox analytics at the global level
+    if (typeof window !== 'undefined') {
+      // Store original methods
+      const originalFetch = window.fetch;
+      const originalXMLHttpRequest = window.XMLHttpRequest;
+      
+      // Create a no-op function for blocked requests
+      const blockRequest = () => {
+        const error = new Error('Analytics blocked');
+        error.name = 'BlockedRequest';
+        return Promise.reject(error);
+      };
+      
+      // Override fetch with more comprehensive blocking
+      window.fetch = function(url, options) {
+        if (typeof url === 'string') {
+          const blockedPatterns = [
+            'events.mapbox.com',
+            'api.mapbox.com/events',
+            'telemetry',
+            'analytics',
+            'tracking',
+            'metrics'
+          ];
+          
+          if (blockedPatterns.some(pattern => url.includes(pattern))) {
+            console.log('Blocked analytics request:', url);
+            return blockRequest();
+          }
+        }
+        return originalFetch.call(this, url, options);
+      };
+      
+      // Override XMLHttpRequest with comprehensive blocking
+      window.XMLHttpRequest = function() {
+        const xhr = new originalXMLHttpRequest();
+        const originalOpen = xhr.open;
+        const originalSend = xhr.send;
+        
+        xhr.open = function(method, url, ...args) {
+          if (typeof url === 'string') {
+            const blockedPatterns = [
+              'events.mapbox.com',
+              'api.mapbox.com/events',
+              'telemetry',
+              'analytics',
+              'tracking',
+              'metrics'
+            ];
+            
+            if (blockedPatterns.some(pattern => url.includes(pattern))) {
+              console.log('Blocked analytics XHR request:', url);
+              // Store the blocked URL for reference
+              this._blockedUrl = url;
+              return;
+            }
+          }
+          return originalOpen.call(this, method, url, ...args);
+        };
+        
+        xhr.send = function(data) {
+          if (this._blockedUrl) {
+            console.log('Prevented sending blocked XHR request:', this._blockedUrl);
+            return;
+          }
+          return originalSend.call(this, data);
+        };
+        
+        return xhr;
+      };
     }
   }, [mapboxConfig]);
 
@@ -48,11 +151,14 @@ const MapView = ({ locations }) => {
     if (locations && locations.length > 0) {
       bounds = new mapboxgl.LngLatBounds();
       locations.forEach(location => {
-        bounds.extend([location.lng, location.lat]);
+        const { lat, lng, isValid } = validateAndCorrectCoordinates(location.lat, location.lng);
+        if (isValid) {
+          bounds.extend([lng, lat]);
+        }
       });
     }
 
-    // Initialize map with enhanced settings
+    // Initialize map with enhanced settings and performance optimizations
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: mapboxConfig.style || 'mapbox://styles/mapbox/streets-v12',
@@ -66,21 +172,72 @@ const MapView = ({ locations }) => {
       },
       // Disable analytics to prevent blocking issues
       attributionControl: false,
-      logoPosition: 'bottom-right'
+      logoPosition: 'bottom-right',
+      // Performance optimizations
+      renderWorldCopies: false,
+      maxZoom: 18,
+      minZoom: 1,
+      // Disable Mapbox analytics and telemetry
+      transformRequest: (url, resourceType) => {
+        if (url.includes('events.mapbox.com') || 
+            url.includes('api.mapbox.com/events') ||
+            url.includes('telemetry') ||
+            url.includes('analytics')) {
+          return null; // Block analytics requests
+        }
+        return { url };
+      }
     });
 
-    // Add enhanced controls
-    map.current.addControl(new mapboxgl.NavigationControl({ 
-      showCompass: true,
-      showZoom: true
-    }), 'top-right');
+    // Add basic controls without the problematic ones
+    // Note: We're skipping NavigationControl and GeolocateControl to avoid passive event listener warnings
+    // The map still has built-in zoom and pan functionality
     
-    map.current.addControl(new mapboxgl.GeolocateControl({
-      positionOptions: { enableHighAccuracy: true },
-      trackUserLocation: true,
-      showAccuracyCircle: true
-    }), 'top-right');
-
+    // Add a simple custom zoom control
+    const zoomControl = document.createElement('div');
+    zoomControl.className = 'mapboxgl-ctrl mapboxgl-ctrl-group';
+    zoomControl.style.cssText = `
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: white;
+      border-radius: 4px;
+      box-shadow: 0 0 0 2px rgba(0,0,0,.1);
+      display: flex;
+      flex-direction: column;
+    `;
+    
+    const zoomIn = document.createElement('button');
+    zoomIn.innerHTML = '+';
+    zoomIn.style.cssText = `
+      width: 30px;
+      height: 30px;
+      border: none;
+      background: white;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: bold;
+      border-bottom: 1px solid #ccc;
+    `;
+    zoomIn.onclick = () => map.current.zoomIn();
+    
+    const zoomOut = document.createElement('button');
+    zoomOut.innerHTML = '−';
+    zoomOut.style.cssText = `
+      width: 30px;
+      height: 30px;
+      border: none;
+      background: white;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: bold;
+    `;
+    zoomOut.onclick = () => map.current.zoomOut();
+    
+    zoomControl.appendChild(zoomIn);
+    zoomControl.appendChild(zoomOut);
+    mapContainer.current.appendChild(zoomControl);
+    
     map.current.on('load', () => {
       setMapLoaded(true);
     });
@@ -97,6 +254,12 @@ const MapView = ({ locations }) => {
           cancelAnimationFrame(marker.animationId);
         }
       });
+      
+      // Clean up custom zoom control
+      const zoomControl = mapContainer.current?.querySelector('.mapboxgl-ctrl-group');
+      if (zoomControl) {
+        zoomControl.remove();
+      }
       
       if (map.current) {
         map.current.remove();
@@ -122,16 +285,16 @@ const MapView = ({ locations }) => {
       // Debug coordinates
       console.log(`Location: ${location.name}, Lat: ${location.lat}, Lng: ${location.lng}`);
       
-      // Validate coordinates
-      if (!location.lat || !location.lng || isNaN(location.lat) || isNaN(location.lng)) {
-        console.error(`Invalid coordinates for ${location.name}:`, location.lat, location.lng);
+      // Validate and normalize coordinates using utility function
+      const { lat, lng, isValid, error, wasCorrected } = validateAndCorrectCoordinates(location.lat, location.lng);
+      
+      if (!isValid) {
+        console.error(`Invalid coordinates for ${location.name}:`, error);
         return;
       }
       
-      // Check if coordinates are reasonable for Pakistan/Karachi area
-      if (location.lat < 20 || location.lat > 40 || location.lng < 60 || location.lng > 80) {
-        console.warn(`Coordinates for ${location.name} seem incorrect:`, location.lat, location.lng);
-        console.warn('Expected range: Lat 20-40, Lng 60-80 (Pakistan area)');
+      if (wasCorrected) {
+        console.log(`Corrected coordinates for ${location.name}:`, lat, lng);
       }
       
       const color = getColor(location.type);
@@ -183,28 +346,50 @@ const MapView = ({ locations }) => {
               ${location.type.charAt(0).toUpperCase() + location.type.slice(1)}
             </span>
           </div>
-          <p class="text-xs text-gray-400">Coordinates: ${location.lat.toFixed(4)}, ${location.lng.toFixed(4)}</p>
+          <p class="text-xs text-gray-400">Coordinates: ${formatCoordinates(lat, lng)}</p>
         </div>
       `);
 
-      // Create marker with enhanced features
+      // Create marker with enhanced features using corrected coordinates
       const marker = new mapboxgl.Marker(el)
-        .setLngLat([location.lng, location.lat])
+        .setLngLat([lng, lat])
         .setPopup(popup)
         .addTo(map.current);
 
-      // Add subtle pulse animation (optimized)
+      // Add subtle pulse animation (highly optimized)
       let animationId;
+      let lastFrameTime = 0;
+      const frameInterval = 1000 / 15; // 15 FPS max for better performance
+      let isAnimating = false;
+      
       const animateMarker = (timestamp) => {
-        const scale = 1.0 + Math.sin(timestamp / 1000) * 0.05; // Slower, more subtle animation
+        if (!isAnimating) return;
+        
+        if (timestamp - lastFrameTime >= frameInterval) {
+          const scale = 1.0 + Math.sin(timestamp / 3000) * 0.02; // Very subtle animation
         el.style.transform = `scale(${scale})`;
+          lastFrameTime = timestamp;
+        }
         animationId = requestAnimationFrame(animateMarker);
       };
       
-      // Start animation after a delay to reduce initial load
+      // Start animation after a delay and only if marker is still valid
       setTimeout(() => {
+        if (marker && !marker.removed && map.current) {
+          isAnimating = true;
         animationId = requestAnimationFrame(animateMarker);
-      }, 1000);
+        }
+      }, 3000);
+      
+      // Stop animation when marker is removed
+      const originalRemove = marker.remove;
+      marker.remove = function() {
+        isAnimating = false;
+        if (animationId) {
+          cancelAnimationFrame(animationId);
+        }
+        return originalRemove.call(this);
+      };
 
       // Store marker with animation ID for cleanup
       marker.animationId = animationId;
@@ -216,8 +401,12 @@ const MapView = ({ locations }) => {
       setTimeout(() => {
         if (locations.length === 1) {
           // Single location - fly to it with enhanced animation
+          const location = locations[0];
+          const { lat, lng, isValid } = validateAndCorrectCoordinates(location.lat, location.lng);
+          
+          if (isValid) {
           map.current.flyTo({
-            center: [locations[0].lng, locations[0].lat],
+              center: [lng, lat],
             zoom: 14,
             pitch: 45,
             bearing: 20,
@@ -225,41 +414,83 @@ const MapView = ({ locations }) => {
             curve: 1.2,
             easing: function (t) { return t; }
           });
+          }
         } else {
           // Multiple locations - fit bounds
           const bounds = new mapboxgl.LngLatBounds();
           locations.forEach(location => {
-            bounds.extend([location.lng, location.lat]);
+            const { lat, lng, isValid } = validateAndCorrectCoordinates(location.lat, location.lng);
+            if (isValid) {
+              bounds.extend([lng, lat]);
+            }
           });
           map.current.fitBounds(bounds, { padding: 50 });
         }
       }, 500);
     }
-  }, [mapLoaded, locations]);
+  }, [mapLoaded, locations, getColor, getColorClass]);
 
-  const getColor = (type) => {
-    const colors = {
-      venue: '#3B82F6',
-      reception: '#10B981',
-      mehndi: '#F59E0B',
-      barat: '#EF4444',
-      photography: '#8B5CF6',
-      custom: '#6B7280'
-    };
-    return colors[type] || '#6B7280';
-  };
+  // Memoize legend and location list components
+  const legendComponent = useMemo(() => {
+    if (!locations || locations.length === 0) return null;
+    
+    const locationTypes = ['venue', 'reception', 'mehndi', 'barat', 'photography', 'custom'];
+    const typeCounts = locationTypes.reduce((acc, type) => {
+      acc[type] = locations.filter(l => l.type === type).length;
+      return acc;
+    }, {});
+    
+    return (
+      <div className="mt-4 space-y-2">
+        <h4 className="text-sm font-medium text-gray-700">Location Types:</h4>
+        <div className="grid grid-cols-2 gap-2 text-xs">
+          {locationTypes.map(type => {
+            const count = typeCounts[type];
+            if (count === 0) return null;
+            
+            return (
+              <div key={type} className="flex items-center space-x-2">
+                <div
+                  className="w-3 h-3 rounded-full"
+                  style={{ backgroundColor: getColor(type) }}
+                />
+                <span className="capitalize">{type} ({count})</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }, [locations, getColor]);
 
-  const getColorClass = (type) => {
-    const colorClasses = {
-      venue: 'blue',
-      reception: 'green',
-      mehndi: 'yellow',
-      barat: 'red',
-      photography: 'purple',
-      custom: 'gray'
-    };
-    return colorClasses[type] || 'gray';
-  };
+  const locationListComponent = useMemo(() => {
+    if (!locations || locations.length === 0) return null;
+    
+    return (
+      <div className="mt-4 max-h-32 overflow-y-auto">
+        <h4 className="text-sm font-medium text-gray-700 mb-2">Locations:</h4>
+        <div className="space-y-1 text-xs">
+          {locations.map((location, index) => {
+            const { lat, lng, isValid } = validateAndCorrectCoordinates(location.lat, location.lng);
+            return (
+              <div key={location._id} className="flex items-center justify-between hover:bg-gray-50 p-1 rounded">
+                <span className="flex items-center space-x-2">
+                  <div
+                    className="w-2 h-2 rounded-full"
+                    style={{ backgroundColor: getColor(location.type) }}
+                  />
+                  <span className="font-medium">{location.name}</span>
+                </span>
+                <span className="text-gray-500 text-xs">
+                  {isValid ? formatCoordinates(lat, lng, 3) : 'Invalid coordinates'}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }, [locations, getColor]);
 
   if (configError) {
     return (
@@ -301,47 +532,10 @@ const MapView = ({ locations }) => {
       />
       
       {/* Legend */}
-      <div className="mt-4 space-y-2">
-        <h4 className="text-sm font-medium text-gray-700">Location Types:</h4>
-        <div className="grid grid-cols-2 gap-2 text-xs">
-          {['venue', 'reception', 'mehndi', 'barat', 'photography', 'custom'].map(type => {
-            const color = getColor(type);
-            const count = locations.filter(l => l.type === type).length;
-            if (count === 0) return null;
-            
-            return (
-              <div key={type} className="flex items-center space-x-2">
-                <div
-                  className="w-3 h-3 rounded-full"
-                  style={{ backgroundColor: color }}
-                />
-                <span className="capitalize">{type} ({count})</span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+      {legendComponent}
       
       {/* Location List */}
-      <div className="mt-4 max-h-32 overflow-y-auto">
-        <h4 className="text-sm font-medium text-gray-700 mb-2">Locations:</h4>
-        <div className="space-y-1 text-xs">
-          {locations.map((location, index) => (
-            <div key={location._id} className="flex items-center justify-between hover:bg-gray-50 p-1 rounded">
-              <span className="flex items-center space-x-2">
-                <div
-                  className="w-2 h-2 rounded-full"
-                  style={{ backgroundColor: getColor(location.type) }}
-                />
-                <span className="font-medium">{location.name}</span>
-              </span>
-              <span className="text-gray-500 text-xs">
-                {location.lat.toFixed(3)}, {location.lng.toFixed(3)}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
+      {locationListComponent}
     </div>
   );
 };
