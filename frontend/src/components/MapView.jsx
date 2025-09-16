@@ -144,6 +144,9 @@ const MapView = ({ locations }) => {
 
     if (map.current) return; // Initialize map only once
 
+    // Capture the ref value at the beginning of the effect
+    const currentMapContainer = mapContainer.current;
+
     mapboxgl.accessToken = mapboxConfig.accessToken;
 
     // Calculate bounds if we have locations
@@ -255,8 +258,8 @@ const MapView = ({ locations }) => {
         }
       });
       
-      // Clean up custom zoom control
-      const zoomControl = mapContainer.current?.querySelector('.mapboxgl-ctrl-group');
+      // Clean up custom zoom control using captured ref
+      const zoomControl = currentMapContainer?.querySelector('.mapboxgl-ctrl-group');
       if (zoomControl) {
         zoomControl.remove();
       }
