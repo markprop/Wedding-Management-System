@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: wedding-planner-backend
+    env: docker
+    dockerfilePath: ./backend/Dockerfile
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        fromDatabase:
+          name: wedding-planner-db
+          property: connectionString
+      - key: MAPBOX_ACCESS_TOKEN
+        sync: false
+    healthCheckPath: /api/health
+
+  - type: web
+    name: wedding-planner-frontend
+    env: docker
+    dockerfilePath: ./frontend/Dockerfile
+    plan: free
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://wedding-planner-backend.onrender.com/api
+      - key: REACT_APP_MAPBOX_TOKEN
+        sync: false
+
+databases:
+  - name: wedding-planner-db
+    plan: free
+    databaseName: wedding_planner
+

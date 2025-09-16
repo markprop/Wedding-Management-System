@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "build"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/static/(.*)",
+      "dest": "/static/$1"
+    },
+    {
+      "src": "/(.*\\.(js|css|ico|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot))",
+      "dest": "/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ],
+  "env": {
+    "REACT_APP_API_URL": "https://wedding-management-system-backend.vercel.app/api",
+    "REACT_APP_MAPBOX_TOKEN": "pk.eyJ1Ijoic3VyZXNoYmFyYWNoMjAwMSIsImEiOiJjbWYzcDh5a3MwMGV0MmtzNDQ3ODlkY3p6In0.OVdVP7rRea7wK1UEn1OSfw"
+  }
+}

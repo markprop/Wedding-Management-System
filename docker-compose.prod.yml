@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: wedding-planner-mongodb-prod
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: wedding_planner
+    volumes:
+      - mongodb_data_prod:/data/db
+    networks:
+      - wedding-network
+    # Remove port exposure for security in production
+    # ports:
+    #   - "27017:27017"
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: wedding-planner-backend-prod
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      MONGODB_URI: mongodb+srv://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@suresh-wedding.autdlq2.mongodb.net/wedding_planner?retryWrites=true&w=majority&appName=Suresh-Wedding
+      MAPBOX_ACCESS_TOKEN: ${MAPBOX_ACCESS_TOKEN}
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongodb
+    networks:
+      - wedding-network
+
+  # Frontend React App
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: wedding-planner-frontend-prod
+    restart: unless-stopped
+    environment:
+      REACT_APP_API_URL: ${REACT_APP_API_URL}
+      REACT_APP_MAPBOX_TOKEN: ${MAPBOX_ACCESS_TOKEN}
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - wedding-network
+
+volumes:
+  mongodb_data_prod:
+
+networks:
+  wedding-network:
+    driver: bridge
+
