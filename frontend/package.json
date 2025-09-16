@@ -50,7 +50,7 @@
     "type": "git",
     "url": "https://github.com/markprop/Wedding-Management-System.git"
   },
-  "homepage": "https://github.com/markprop/Wedding-Management-System#readme",
+  "homepage": ".",
   "bugs": {
     "url": "https://github.com/markprop/Wedding-Management-System/issues"
   }
